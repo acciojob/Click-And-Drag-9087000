@@ -1,42 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Click and Drag</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do App</title>
+    <style>
+        .container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+        }
+        .items {
+            list-style-type: none;
+            padding: 0;
+        }
+        .item {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #007bff;
+            color: white;
+            cursor: grab;
+        }
+        .item.dragging {
+            opacity: 0.5;
+        }
+    </style>
 </head>
 <body>
-  <div class="items">
-    <div class="item item1">01</div>
-    <div class="item item2">02</div>
-    <div class="item item3">03</div>
-    <div class="item item4">04</div>
-    <div class="item item5">05</div>
-    <div class="item item6">06</div>
-    <div class="item item7">07</div>
-    <div class="item item8">08</div>
-    <div class="item item9">09</div>
-    <div class="item item10">10</div>
-    <div class="item item11">11</div>
-    <div class="item item12">12</div>
-    <div class="item item13">13</div>
-    <div class="item item14">14</div>
-    <div class="item item15">15</div>
-    <div class="item item16">16</div>
-    <div class="item item17">17</div>
-    <div class="item item18">18</div>
-    <div class="item item19">19</div>
-    <div class="item item20">20</div>
-    <div class="item item21">21</div>
-    <div class="item item22">22</div>
-    <div class="item item23">23</div>
-    <div class="item item24">24</div>
-    <div class="item item25">25</div>
-  </div>
+
+<div class="container">
+    <h1>To-Do List</h1>
+    <ul class="items" id="todoList">
+        <li class="item" draggable="true">Task 1</li>
+        <li class="item" draggable="true">Task 2</li>
+        <li class="item" draggable="true">Task 3</li>
+    </ul>
+</div>
 
 <script>
-//Your code goes here 
+    const items = document.querySelectorAll('.item');
+    let draggingItem = null;
+
+    items.forEach(item => {
+        item.addEventListener('dragstart', () => {
+            draggingItem = item;
+            setTimeout(() => item.classList.add('dragging'), 0);
+        });
+
+        item.addEventListener('dragend', () => {
+            item.classList.remove('dragging');
+            draggingItem = null;
+        });
+
+        item.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+
+        item.addEventListener('drop', () => {
+            if (draggingItem) {
+                const currentItem = draggingItem;
+                const droppedOn = item;
+
+                if (currentItem !== droppedOn) {
+                    const allItems = [...todoList.children];
+                    const currentIndex = allItems.indexOf(currentItem);
+                    const droppedIndex = allItems.indexOf(droppedOn);
+
+                    if (currentIndex < droppedIndex) {
+                        droppedOn.after(currentItem);
+                    } else {
+                        droppedOn.before(currentItem);
+                    }
+                }
+            }
+        });
+    });
 </script>
 
-  </body>
+</body>
 </html>
