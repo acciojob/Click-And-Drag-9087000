@@ -40,42 +40,44 @@
 
 <script>
     const items = document.querySelectorAll('.item');
+    const todoList = document.getElementById('todoList');
     let draggingItem = null;
 
     items.forEach(item => {
-        item.addEventListener('dragstart', () => {
+        item.addEventListener('dragstart', (e) => {
             draggingItem = item;
             setTimeout(() => item.classList.add('dragging'), 0);
         });
 
-        item.addEventListener('dragend', () => {
+        item.addEventListener('dragend', (e) => {
             item.classList.remove('dragging');
             draggingItem = null;
         });
 
         item.addEventListener('dragover', (e) => {
             e.preventDefault();
-        });
-
-        item.addEventListener('drop', () => {
-            if (draggingItem) {
-                const currentItem = draggingItem;
-                const droppedOn = item;
-
-                if (currentItem !== droppedOn) {
-                    const allItems = [...todoList.children];
-                    const currentIndex = allItems.indexOf(currentItem);
-                    const droppedIndex = allItems.indexOf(droppedOn);
-
-                    if (currentIndex < droppedIndex) {
-                        droppedOn.after(currentItem);
-                    } else {
-                        droppedOn.before(currentItem);
-                    }
-                }
+            const afterElement = getDragAfterElement(todoList, e.clientY);
+            if (afterElement == null) {
+                todoList.appendChild(draggingItem);
+            } else {
+                todoList.insertBefore(draggingItem, afterElement);
             }
         });
     });
+
+    function getDragAfterElement(container, y) {
+        const draggableElements = [...container.querySelectorAll('.item:not(.dragging)')];
+
+        return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+            const offset = y - box.top - box.height / 2;
+            if (offset < 0 && offset > closest.offset) {
+                return { offset: offset, element: child };
+            } else {
+                return closest;
+            }
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
 </script>
 
 </body>
